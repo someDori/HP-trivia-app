@@ -5,13 +5,14 @@
 //  Created by Demetre Panjakidze on 11.12.24.
 //
 
-import SwiftUI
 import AVKit
+import SwiftUI
 
 struct ContentView: View {
     @State private var audioPlayer: AVAudioPlayer!
     @State private var scalePlayButton = false
     @State private var moveBackroundImage = false
+    @State private var animateViewsIn = false
     
     var body: some View {
         GeometryReader { geo in
@@ -20,8 +21,8 @@ struct ContentView: View {
                     .resizable()
                     .frame(width: geo.size.width * 3, height: geo.size.height * 1.05)
                     .offset(x: moveBackroundImage ?
-                            geo.size.width / 1.1 :
-                                geo.size.width / -1.1)
+                        geo.size.width / 1.1 :
+                        geo.size.width / -1.1)
                     .onAppear {
                         withAnimation(.linear(duration: 60).repeatForever()) {
                             moveBackroundImage.toggle()
@@ -30,80 +31,130 @@ struct ContentView: View {
                 
                 VStack {
                     VStack {
-                        Image(systemName: "bolt.fill")
-                            .font(.largeTitle)
-                            .imageScale(.large)
-                        
-                        Text("HP")
-                            .font(.custom(Constants.hpFont, size: 70))
-                            .padding(.bottom, -50)
-                        
-                        Text("Trivia")
-                            .font(.custom(Constants.hpFont, size: 60))
+                        if animateViewsIn {
+                            VStack {
+                                Image(systemName: "bolt.fill")
+                                    .font(.largeTitle)
+                                    .imageScale(.large)
+                                
+                                Text("HP")
+                                    .font(.custom(Constants.hpFont, size: 70))
+                                    .padding(.bottom, -50)
+                                
+                                Text("Trivia")
+                                    .font(.custom(Constants.hpFont, size: 60))
+                            }
+                            .padding(.top, 120)
+                            .transition(.move(edge: .top))
+                        }
                     }
-                    .padding(.top, 120)
+                    .animation(
+                        .easeOut(
+                            duration: 0.7).delay(2),
+                        value: animateViewsIn
+                    )
                     
                     Spacer()
                     
                     VStack {
-                        Text("Recent Scores")
-                            .font(.title2)
-                        
-                        Text("33")
-                        Text("27")
-                        Text("15")
+                        if animateViewsIn {
+                            VStack {
+                                Text("Recent Scores")
+                                    .font(.title2)
+                                
+                                Text("33")
+                                Text("27")
+                                Text("15")
+                            }
+                            .font(.title3)
+                            .padding(.horizontal)
+                            .foregroundStyle(.white)
+                            .background(.black.opacity(0.7))
+                            .clipShape(.rect(cornerRadius: 15))
+                            .transition(.opacity)
+                        }
                     }
-                    .font(.title3)
-                    .padding(.horizontal)
-                    .foregroundStyle(.white)
-                    .background(.black.opacity(0.7))
-                    .clipShape(.rect(cornerRadius: 15))
+                    .animation(
+                        .linear(
+                            duration: 1).delay(4),
+                        value: animateViewsIn
+                    )
                     
                     Spacer()
                     
                     HStack {
                         Spacer()
                         
-                        Button {
-                            // show instructions screen
-                        } label: {
-                            Image(systemName: "info.circle.fill")
-                                .font(.largeTitle)
-                                .foregroundStyle(.white)
-                                .shadow(radius: 5)
-                        }
-                        
-                        Spacer()
-                        
-                        Button {
-                            // start new game
-                        } label: {
-                            Text("Play")
-                                .font(.largeTitle)
-                                .foregroundStyle(.white)
-                                .padding(.vertical, 7)
-                                .padding(.horizontal, 50)
-                                .background(.brown)
-                        }
-                        .clipShape(.rect(cornerRadius: 7))
-                        .shadow(radius: 5)
-                        .scaleEffect(scalePlayButton ? 1.2 : 1)
-                        .onAppear {
-                            withAnimation(.easeInOut(duration: 1.3).repeatForever()) {
-                                scalePlayButton.toggle()
+                        VStack {
+                            if animateViewsIn {
+                                Button {
+                                    // show instructions screen
+                                } label: {
+                                    Image(systemName: "info.circle.fill")
+                                        .font(.largeTitle)
+                                        .foregroundStyle(.white)
+                                        .shadow(radius: 5)
+                                }
+                                .transition(.offset(x: -geo.size.width / 4))
                             }
                         }
+                        .animation(
+                            .easeOut(
+                                duration: 0.7).delay(2.7),
+                            value: animateViewsIn
+                        )
                         
                         Spacer()
                         
-                        Button {
-                            // show settings screen
-                        } label: {
-                            Image(systemName: "gearshape.fill")
-                                .font(.largeTitle)
-                                .foregroundStyle(.white)
+                        VStack {
+                            if animateViewsIn {
+                                Button {
+                                    // start new game
+                                } label: {
+                                    Text("Play")
+                                        .font(.largeTitle)
+                                        .foregroundStyle(.white)
+                                        .padding(.vertical, 7)
+                                        .padding(.horizontal, 50)
+                                        .background(.brown)
+                                }
+                                .clipShape(.rect(cornerRadius: 7))
                                 .shadow(radius: 5)
+                                .scaleEffect(scalePlayButton ? 1.2 : 1)
+                                .onAppear {
+                                    withAnimation(.easeInOut(duration: 1.3).repeatForever()) {
+                                        scalePlayButton.toggle()
+                                    }
+                                }
+                                .transition(.offset(y: geo.size.height / 3))
+                            }
                         }
+                        .animation(
+                            .easeOut(
+                                duration: 0.7).delay(2),
+                            value: animateViewsIn
+                        )
+                        
+                        Spacer()
+                        
+                        VStack {
+                            if animateViewsIn {
+                                Button {
+                                    // show settings screen
+                                } label: {
+                                    Image(systemName: "gearshape.fill")
+                                        .font(.largeTitle)
+                                        .foregroundStyle(.white)
+                                        .shadow(radius: 5)
+                                }
+                                .transition(.offset(x: geo.size.width / 4))
+                            }
+                        }
+                        .animation(
+                            .easeOut(
+                                duration: 0.7).delay(2.7),
+                            value: animateViewsIn
+                        )
                         
                         Spacer()
                     }
@@ -116,6 +167,7 @@ struct ContentView: View {
         }
         .ignoresSafeArea()
         .onAppear {
+            animateViewsIn = true
 //            playAudio()
         }
     }
