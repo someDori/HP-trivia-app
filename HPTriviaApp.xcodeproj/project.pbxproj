@@ -32,8 +32,8 @@
 		E2007B0B2D09C6E30040BDA5 = {
 			isa = PBXGroup;
 			children = (
-				E2007B162D09C6E30040BDA5 /* HPTriviaApp */,
 				E2007B152D09C6E30040BDA5 /* Products */,
+				E2007B162D09C6E30040BDA5 /* HPTriviaApp */,
 			);
 			sourceTree = "<group>";
 		};
