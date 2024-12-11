@@ -168,7 +168,7 @@ struct ContentView: View {
         .ignoresSafeArea()
         .onAppear {
             animateViewsIn = true
-//            playAudio()
+            playAudio()
         }
     }
     
