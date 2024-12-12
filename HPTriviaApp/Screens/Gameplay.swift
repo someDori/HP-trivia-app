@@ -10,6 +10,9 @@ import SwiftUI
 struct Gameplay: View {
     @State private var animateViewsIn = false
     @State private var tappedCorrectAnswer = false
+    @State private var hintWiggle = false
+    @State private var scaleNextButton = false
+    @State private var movePointsToScore = false
     
     var body: some View {
         GeometryReader { geo in
@@ -20,7 +23,6 @@ struct Gameplay: View {
                     .overlay(Rectangle().foregroundStyle(.black.opacity(0.8)))
                 VStack {
                     // MARK: Controls
-
                     HStack {
                         Button("End Game") {
                             // TODO: End game
@@ -36,7 +38,6 @@ struct Gameplay: View {
                     .padding(.vertical, 30)
                     
                     // MARK: Question
-
                     VStack {
                         if animateViewsIn {
                             Text("Who is Harry Poter?")
@@ -54,7 +55,6 @@ struct Gameplay: View {
                     Spacer()
                     
                     // MARK: Hints
-
                     HStack {
                         VStack {
                             if animateViewsIn {
@@ -63,10 +63,20 @@ struct Gameplay: View {
                                     .scaledToFit()
                                     .frame(width: 100)
                                     .foregroundStyle(.cyan)
-                                    .rotationEffect(.degrees(-15))
+                                    .rotationEffect(.degrees(hintWiggle ? -13 : -17))
                                     .padding()
                                     .padding(.leading, 20)
                                     .transition(.offset(x: -geo.size.width / 2))
+                                    .onAppear {
+                                        withAnimation(
+                                            .easeInOut(duration: 0.1)
+                                            .repeatCount(9)
+                                            .delay(5)
+                                            .repeatForever()
+                                        ) {
+                                            hintWiggle = true
+                                        }
+                                    }
                             }
                         }
                         .animation(
@@ -87,10 +97,20 @@ struct Gameplay: View {
                                     .frame(width: 100, height: 100)
                                     .background(.cyan)
                                     .clipShape(.rect(cornerRadius: 20))
-                                    .rotationEffect(.degrees(15))
+                                    .rotationEffect(.degrees(hintWiggle ? 13 : 17))
                                     .padding()
                                     .padding(.trailing, 20)
                                     .transition(.offset(x: geo.size.width / 2))
+                                    .onAppear {
+                                        withAnimation(
+                                            .easeInOut(duration: 0.1)
+                                            .repeatCount(9)
+                                            .delay(5)
+                                            .repeatForever()
+                                        ) {
+                                            hintWiggle = true
+                                        }
+                                    }
                             }
                         }
                         .animation(
@@ -102,7 +122,6 @@ struct Gameplay: View {
                     .padding(.bottom)
                     
                     // MARK: Answers
-
                     LazyVGrid(columns: [GridItem(), GridItem()]) {
                         ForEach(1 ..< 5) { i in
                             VStack {
@@ -143,6 +162,18 @@ struct Gameplay: View {
                                 .font(.largeTitle)
                                 .padding(.top, 50)
                                 .transition(.offset(y: -geo.size.height / 4))
+                                .offset(
+                                    x: movePointsToScore ? geo.size.width / 2.3 : 0,
+                                    y: movePointsToScore ? -geo.size.height / 13 : 0
+                                )
+                                .opacity(movePointsToScore ? 0 : 1)
+                                .onAppear {
+                                    withAnimation(
+                                        .easeInOut(duration: 1).delay(3)
+                                    ) {
+                                        movePointsToScore = true
+                                    }
+                                }
                         }
                     }
                     .animation(
@@ -167,14 +198,16 @@ struct Gameplay: View {
                     
                     Spacer()
                     
-                    Text("Answer 1")
-                        .minimumScaleFactor(0.5)
-                        .multilineTextAlignment(.center)
-                        .padding(10)
-                        .frame(width: geo.size.width / 2.15, height: 80)
-                        .background(.green.opacity(0.5))
-                        .clipShape(.rect(cornerRadius: 25))
-                        .scaleEffect(2)
+                    if tappedCorrectAnswer {
+                        Text("Answer 1")
+                            .minimumScaleFactor(0.5)
+                            .multilineTextAlignment(.center)
+                            .padding(10)
+                            .frame(width: geo.size.width / 2.15, height: 80)
+                            .background(.green.opacity(0.5))
+                            .clipShape(.rect(cornerRadius: 25))
+                            .scaleEffect(2)
+                    }
                     
                     Spacer()
                     Spacer()
@@ -188,6 +221,12 @@ struct Gameplay: View {
                             .tint(.blue.opacity(0.5))
                             .font(.largeTitle)
                             .transition(.offset(y: geo.size.height / 3))
+                            .scaleEffect(scaleNextButton ? 1.2 : 1)
+                            .onAppear {
+                                withAnimation(.easeInOut(duration: 1.3).repeatForever()) {
+                                    scaleNextButton.toggle()
+                                }
+                            }
                         }
                     }
                     .animation(.easeInOut(duration: 2.7)
