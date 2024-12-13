@@ -180,7 +180,7 @@ struct ContentView: View {
         }
         .onAppear {
             animateViewsIn = true
-//            playAudio()
+            playAudio()
         }
     }
     

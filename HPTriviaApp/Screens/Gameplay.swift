@@ -6,9 +6,11 @@
 //
 
 import SwiftUI
+import AVKit
 
 struct Gameplay: View {
     @Environment(\.dismiss) private var dismiss
+    @StateObject private var audioManager = AudioManager()
     @Namespace private var namespace
     @State private var animateViewsIn = false
     @State private var tappedCorrectAnswer = false
@@ -56,7 +58,7 @@ struct Gameplay: View {
                         }
                     }
                     .animation(
-                        .easeInOut(duration: 2),
+                        .easeInOut(duration: animateViewsIn ? 2 : 0),
                         value: animateViewsIn
                     )
                     
@@ -89,6 +91,8 @@ struct Gameplay: View {
                                         withAnimation(.easeOut(duration: 1)) {
                                             revealHint = true
                                         }
+                                        audioManager
+                                            .playSound("page-flip")
                                     }
                                     .rotation3DEffect(
                                         .degrees(revealHint ? 1440 : 0),
@@ -110,8 +114,8 @@ struct Gameplay: View {
                             }
                         }
                         .animation(
-                            .easeOut(duration: 1.5)
-                                .delay(2),
+                            .easeOut(duration: animateViewsIn ? 1.5 : 0)
+                            .delay(animateViewsIn ? 2 : 0),
                             value: animateViewsIn
                         )
                         
@@ -145,6 +149,8 @@ struct Gameplay: View {
                                         withAnimation(.easeOut(duration: 1)) {
                                             revealBook = true
                                         }
+                                        audioManager
+                                            .playSound("page-flip")
                                     }
                                     .rotation3DEffect(
                                         .degrees(revealBook ? 1440 : 0),
@@ -166,8 +172,8 @@ struct Gameplay: View {
                             }
                         }
                         .animation(
-                            .easeOut(duration: 1.5)
-                                .delay(2),
+                            .easeOut(duration: animateViewsIn ? 1.5 : 0)
+                            .delay(animateViewsIn ? 2 : 0),
                             value: animateViewsIn
                         )
                     }
@@ -211,13 +217,16 @@ struct Gameplay: View {
                                                     withAnimation(.easeOut(duration: 1)) {
                                                         tappedCorrectAnswer = true
                                                     }
+                                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                                           audioManager.playSound("magic-wand")
+                                                       }
                                                 }
                                         }
                                     }
                                 }
                                 .animation(
-                                    .easeOut(duration: 1)
-                                        .delay(1.5),
+                                    .easeOut(duration: animateViewsIn ? 1 : 0)
+                                    .delay(animateViewsIn ? 1.5 : 0),
                                     value: animateViewsIn
                                 )
                             } else {
@@ -245,6 +254,9 @@ struct Gameplay: View {
                                                 ) {
                                                     wrongAnswersTapped.append(i)
                                                 }
+                                                audioManager
+                                                    .playSound("negative-beeps")
+                                                giveWrongFeedback()
                                             }
                                             .scaleEffect(
                                                 wrongAnswersTapped
@@ -256,8 +268,8 @@ struct Gameplay: View {
                                     }
                                 }
                                 .animation(
-                                    .easeOut(duration: 1)
-                                        .delay(1.5),
+                                    .easeOut(duration: animateViewsIn ? 1 : 0)
+                                    .delay(animateViewsIn ? 1.5 : 0),
                                     value: animateViewsIn
                                 )
                             }
@@ -308,8 +320,8 @@ struct Gameplay: View {
                         }
                     }
                     .animation(
-                        .easeInOut(duration: 1)
-                            .delay(1),
+                        .easeInOut(duration: tappedCorrectAnswer ? 1 : 0)
+                        .delay(tappedCorrectAnswer ? 1 : 0),
                         value: tappedCorrectAnswer
                     )
                     
@@ -357,11 +369,13 @@ struct Gameplay: View {
                                 withAnimation(.easeInOut(duration: 1.3).repeatForever()) {
                                     scaleNextButton.toggle()
                                 }
+                                audioManager
+                                    .stopAllSounds()
                             }
                         }
                     }
-                    .animation(.easeInOut(duration: 2.7)
-                        .delay(2.7), value: tappedCorrectAnswer)
+                    .animation(.easeInOut(duration: tappedCorrectAnswer ? 2.7 : 0)
+                        .delay(tappedCorrectAnswer ? 2.7 : 0), value: tappedCorrectAnswer)
                     
                     Spacer()
                     Spacer()
@@ -373,8 +387,15 @@ struct Gameplay: View {
         .ignoresSafeArea()
         .onAppear {
             animateViewsIn = true
-//            tappedCorrectAnswer = true
+            audioManager
+                .playMusic()
         }
+    }
+    
+    private func giveWrongFeedback() {
+        let generator = UINotificationFeedbackGenerator()
+
+        generator.notificationOccurred(.error)
     }
 }
 
